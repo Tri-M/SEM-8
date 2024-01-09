@@ -64,27 +64,37 @@ class PlagiarismChecker:
             print(f"{term}\t\t{value}")
 
         # C) similarity according to threshold
+        plagiarized_words = []
         for existing_document in self.database:
             _, existing_content = self.preprocess_document(existing_document)
             existing_vector = self.calculate_tf_idf(existing_content, len(self.database), document_frequencies)
             similarity = self.cosine_similarity(new_vector, existing_vector)
+            
             if similarity > self.alpha:
                 print("Document is a duplicate. Discarding.")
                 return
+            else:
+                # Check each word for plagiarism
+                for term in new_vector.keys():
+                    if term in existing_vector and self.cosine_similarity({term: new_vector[term]}, {term: existing_vector[term]}) > self.alpha:
+                        plagiarized_words.append(term)
 
-        # appending
-        print("Document is not a duplicate. Adding to the database.")
-        self.database.append(new_document)
+        if plagiarized_words:
+            print("Document is plagiarized. Plagiarized words:")
+            print(plagiarized_words)
+        else:
+            print("Document is not a duplicate. Adding to the database.")
+            self.database.append(new_document)
 
-        # Print TF-IDF table for old doc
-        print("\nTF-IDF Table for Existing Documents:")
-        for i, existing_document in enumerate(self.database, start=1):
-            _, existing_content = self.preprocess_document(existing_document)
-            existing_vector = self.calculate_tf_idf(existing_content, len(self.database), document_frequencies)
-            print(f"\nDocument {i}:")
-            print("Term\t\tTF-IDF")
-            for term, value in existing_vector.items():
-                print(f"{term}\t\t{value}")
+            # Print TF-IDF table for old doc
+            print("\nTF-IDF Table for Existing Documents:")
+            for i, existing_document in enumerate(self.database, start=1):
+                _, existing_content = self.preprocess_document(existing_document)
+                existing_vector = self.calculate_tf_idf(existing_content, len(self.database), document_frequencies)
+                print(f"\nDocument {i}:")
+                print("Term\t\tTF-IDF")
+                for term, value in existing_vector.items():
+                    print(f"{term}\t\t{value}")
 
 existing_documents = [
     "D1: information requirement: query considers the user feedback as information requirement to search.",
