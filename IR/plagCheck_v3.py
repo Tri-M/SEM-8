@@ -10,10 +10,7 @@ docsToAdd = [
     'information retrieval:ranking in information retrieval algorithms depends on user query',
 ]
 
-### A) Verify if the titles are exactly same (Apply BinaryDistance(u,v), which gives the
-# binary distance between vectors u and v, equal to 0 if they are identical and 1
-# otherwise.). If same, label the document as duplicate and discard it else proceed to
-# second part of the Checker.
+
 
 dbDocTitles = [doc.split(':')[0] for doc in db]
 
